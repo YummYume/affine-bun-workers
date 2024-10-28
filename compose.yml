@@ -1,0 +1,88 @@
+services:
+  caddy:
+    image: caddy:2.8.4-alpine
+    restart: unless-stopped
+    container_name: affine_caddy
+    ports:
+      - 80:80
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./data/caddy/data:/data
+      - ./data/caddy/config:/config
+
+  workers:
+    image: oven/bun:alpine
+    restart: unless-stopped
+    container_name: affine_workers
+    working_dir: /home/bun/workers
+    command: ['bun', '--hot', 'index.ts']
+    volumes:
+      - './src:/home/bun/workers'
+
+  affine:
+    image: 'ghcr.io/toeverything/affine-graphql:stable'
+    container_name: affine
+    command:
+      - sh
+      - '-c'
+      - 'node ./scripts/self-host-predeploy && node ./dist/index.js'
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    volumes:
+      - './data/affine/config:/root/.affine/config'
+      - './data/affine/storage:/root/.affine/storage'
+    logging:
+      driver: json-file
+      options:
+        max-size: 1000m
+    restart: unless-stopped
+    environment:
+      NODE_OPTIONS: '${NODE_OPTIONS:---import=./scripts/register.js}'
+      AFFINE_CONFIG_PATH: '${AFFINE_CONFIG_PATH:-/root/.affine/config}'
+      REDIS_SERVER_HOST: '${REDIS_SERVER_HOST:-redis}'
+      DATABASE_URL: '${DATABASE_URL}'
+      NODE_ENV: '${NODE_ENV:-production}'
+      AFFINE_SERVER_HOST: '${AFFINE_SERVER_HOST}'
+      AFFINE_SERVER_PORT: '${AFFINE_SERVER_PORT}'
+      AFFINE_SERVER_HTTPS: '${AFFINE_SERVER_HTTPS}'
+      AFFINE_SERVER_EXTERNAL_URL: '${AFFINE_SERVER_EXTERNAL_URL}'
+      TELEMETRY_ENABLE: '${TELEMETRY_ENABLE:-false}'
+
+  redis:
+    image: redis
+    container_name: affine_redis
+    restart: unless-stopped
+    volumes:
+      - './data/redis:/data'
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - '--raw'
+        - incr
+        - ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres:
+    image: 'postgres:16'
+    container_name: affine_postgres
+    restart: unless-stopped
+    volumes:
+      - './data/postgres:/var/lib/postgresql/data'
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'pg_isready -U affine'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_USER: '${POSTGRES_USER}'
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
+      POSTGRES_DB: '${POSTGRES_DB}'
+      PGDATA: '${PGDATA:-/var/lib/postgresql/data/pgdata}'

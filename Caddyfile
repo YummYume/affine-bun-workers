@@ -1,0 +1,9 @@
+{
+	auto_https off
+}
+
+http://localhost {
+	reverse_proxy * affine:3010
+	reverse_proxy /api/worker/link-preview workers:3000
+	reverse_proxy /api/worker/image-proxy workers:3000
+}
