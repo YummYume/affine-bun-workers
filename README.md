@@ -1,5 +1,8 @@
 # AFFiNE Bun Workers
 
+[![Linting](https://github.com/YummYume/affine-bun-workers/actions/workflows/linting.yml/badge.svg)](https://github.com/YummYume/affine-bun-workers/actions/workflows/linting.yml)
+[![Testing](https://github.com/YummYume/affine-bun-workers/actions/workflows/testing.yml/badge.svg)](https://github.com/YummYume/affine-bun-workers/actions/workflows/testing.yml)
+
 [AFFiNE](https://affine.pro) workers but for self-hosted instances, using [Bun](https://bun.sh) and [Elysia](https://elysiajs.com).
 
 ## Content
