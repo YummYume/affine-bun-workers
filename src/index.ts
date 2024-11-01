@@ -1,31 +1,63 @@
-import { getLinkPreviewMetadata } from "./utils/link-preview";
-import { getUrlFromRequest } from "./utils/request";
+import { cors } from '@elysiajs/cors';
+import { Elysia, t } from 'elysia';
+import { helmet } from 'elysia-helmet';
 
-Bun.serve({
-  development: Bun.env.NODE_ENV === 'development',
-  fetch: async (req) => {
-    const url = new URL(req.url);
+import { proxyImage } from './utils/image-proxy';
+import { getLinkPreviewMetadata } from './utils/link-preview';
 
-    // Only allow POST requests
-    if (req.method === 'POST') {
-      if (url.pathname === '/api/worker/link-preview') {
-        const url = await getUrlFromRequest(req);
-        const preview = await getLinkPreviewMetadata(url);
+export const ALLOWED_ORIGINS = Bun.env.ALLOWED_ORIGINS?.split(',') ?? [];
+export const ELYSIA_PORT = Number.parseInt(Bun.env.ELYSIA_PORT ?? '3000');
 
-        return Response.json(preview);
-      }
+export const app = new Elysia({ prefix: '/api/worker' })
+  .use(
+    cors({
+      origin: (request) => {
+        const origin = request.headers.get('origin');
 
-      if (url.pathname === '/api/worker/image-proxy') {
-        const url = await getUrlFromRequest(req);
-        const response = await fetch(url);
+        if (!origin) {
+          return false;
+        }
 
-        // TODO validations + stream this ?
-        return response;
-      }
+        return ALLOWED_ORIGINS.includes(origin);
+      },
+    }),
+  )
+  .use(helmet())
+  .guard({
+    body: t.Object({
+      url: t.String({ format: 'uri' }),
+    }),
+  })
+  .post('/link-preview', async ({ body }) => {
+    return getLinkPreviewMetadata(body.url);
+  })
+  .post('/image-proxy', async ({ body, request, set }) => {
+    const acceptFormat = request.headers.get('accept') ?? '';
+    const format = /image\/avif/.test(acceptFormat) ? 'avif' : 'webp';
+    const imageResponse = await fetch(body.url);
+
+    if (!imageResponse.ok) {
+      set.status = 400;
+
+      return {
+        error: 'The image could not be fetched.',
+      };
     }
 
-    return new Response('Not found', {
-      status: 404,
-    });
-  },
-});
+    const contentType = imageResponse.headers.get('content-type');
+
+    if (!contentType?.startsWith('image/')) {
+      set.status = 400;
+
+      return {
+        error: 'The URL provided does not seem to be an image.',
+      };
+    }
+
+    // TODO: Stream this response
+    return proxyImage(await imageResponse.arrayBuffer(), format);
+  });
+
+app.listen(ELYSIA_PORT);
+
+console.log(`AFFiNE workers are running at ${app.server?.hostname}:${app.server?.port}`);
