@@ -11,13 +11,17 @@ services:
       - ./data/caddy/config:/config
 
   workers:
-    image: oven/bun:alpine
+    image: oven/bun:debian
     restart: unless-stopped
     container_name: affine_workers
     working_dir: /home/bun/workers
-    command: ['bun', '--hot', 'index.ts']
+    entrypoint: './start.sh'
     volumes:
-      - './src:/home/bun/workers'
+      - './:/home/bun/workers'
+    environment:
+      NODE_ENV: '${WORKERS_NODE_ENV}'
+      ELYSIA_PORT: '${WORKERS_ELYSIA_PORT}'
+      ALLOWED_ORIGINS: '${WORKERS_ALLOWED_ORIGINS}'
 
   affine:
     image: 'ghcr.io/toeverything/affine-graphql:stable'
