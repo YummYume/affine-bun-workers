@@ -1,11 +1,12 @@
 {
   "name": "affine-workers-bun",
+  "private": true,
   "version": "1.0.0",
   "type": "module",
   "module": "src/index.js",
   "scripts": {
     "dev": "bun run --watch src/index.ts",
-    "build": "bun build --compile --minify-whitespace --minify-syntax --target bun --outfile server ./src/index.ts",
+    "build": "bun build --compile --minify-whitespace --minify-syntax --target bun --outfile ./build/server --external sharp ./src/index.ts",
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write . && eslint . --fix"
   },

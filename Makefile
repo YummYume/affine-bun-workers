@@ -1,6 +1,10 @@
 COMPOSE=docker compose
 EXEC=$(COMPOSE) exec workers
 
+start:
+	$(COMPOSE) build --no-cache
+	make up
+
 up:
 	$(COMPOSE) up -d --force-recreate --remove-orphans
 
