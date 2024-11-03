@@ -42,5 +42,4 @@ package-lock.json
 **/*.bun
 
 data
-
-server
+build

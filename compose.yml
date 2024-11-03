@@ -23,6 +23,16 @@ services:
       ELYSIA_PORT: '${WORKERS_ELYSIA_PORT}'
       ALLOWED_ORIGINS: '${WORKERS_ALLOWED_ORIGINS}'
 
+  # Uncomment the following to test the production image of the workers
+  # workers:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/prod/Dockerfile
+  #   restart: unless-stopped
+  #   container_name: affine_workers
+  #   environment:
+  #     ALLOWED_ORIGINS: '${WORKERS_ALLOWED_ORIGINS}'
+
   affine:
     image: 'ghcr.io/toeverything/affine-graphql:stable'
     container_name: affine

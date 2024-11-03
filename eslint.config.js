@@ -62,6 +62,6 @@ export default [
     },
   },
   {
-    ignores: ['node_modules/', 'data/', 'dist/'],
+    ignores: ['node_modules/', 'data/', 'build/'],
   },
 ];
