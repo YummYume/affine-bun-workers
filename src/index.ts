@@ -1,3 +1,4 @@
+import { logger } from '@bogeychan/elysia-logger';
 import { cors } from '@elysiajs/cors';
 import { Elysia, t } from 'elysia';
 import { helmet } from 'elysia-helmet';
@@ -9,6 +10,11 @@ export const ALLOWED_ORIGINS = Bun.env.ALLOWED_ORIGINS?.split(',') ?? [];
 export const ELYSIA_PORT = Number.parseInt(Bun.env.ELYSIA_PORT ?? '3000');
 
 export const app = new Elysia({ prefix: '/api/worker' })
+  .use(
+    logger({
+      level: 'debug',
+    }),
+  )
   .use(
     cors({
       origin: (request) => {
@@ -28,10 +34,12 @@ export const app = new Elysia({ prefix: '/api/worker' })
       url: t.String({ format: 'uri' }),
     }),
   })
-  .post('/link-preview', async ({ body }) => {
+  .post('/link-preview', async ({ body, log }) => {
+    log.info('Fetching link preview metadata with URL "%s".', body.url);
+
     return getLinkPreviewMetadata(body.url);
   })
-  .post('/image-proxy', async ({ body, request, set }) => {
+  .post('/image-proxy', async ({ body, request, set, log }) => {
     const acceptFormat = request.headers.get('accept') ?? '';
     const format = /image\/avif/.test(acceptFormat) ? 'avif' : 'webp';
     const imageResponse = await fetch(body.url);
@@ -53,6 +61,8 @@ export const app = new Elysia({ prefix: '/api/worker' })
         error: 'The URL provided does not seem to be an image.',
       };
     }
+
+    log.info('Proxying image with URL "%s" and format "%s".', body.url, format);
 
     // TODO: Stream this response
     return proxyImage(await imageResponse.arrayBuffer(), format);
