@@ -3,7 +3,7 @@
 [![Linting](https://github.com/YummYume/affine-bun-workers/actions/workflows/linting.yml/badge.svg)](https://github.com/YummYume/affine-bun-workers/actions/workflows/linting.yml)
 [![Testing](https://github.com/YummYume/affine-bun-workers/actions/workflows/testing.yml/badge.svg)](https://github.com/YummYume/affine-bun-workers/actions/workflows/testing.yml)
 
-[AFFiNE](https://affine.pro) workers but for self-hosted instances, using [Bun](https://bun.sh) and [Elysia](https://elysiajs.com).
+[AFFiNE](https://affine.pro) workers but for self-hosted Docker instances, using [Bun](https://bun.sh) and [Elysia](https://elysiajs.com).
 
 ## Content
 
@@ -13,6 +13,8 @@
   - [Currently supported workers](#currently-supported-workers)
   - [Thanks](#thanks)
   - [Usage](#usage)
+    - [Configuration](#configuration)
+    - [Stripping or rewriting the prefix](#stripping-or-rewriting-the-prefix)
   - [Development](#development)
 
 ## Why ?
@@ -36,7 +38,65 @@ with their [work](https://github.com/eikaramba/affine-workers). Also a big thank
 
 ## Usage
 
-TODO
+> [!NOTE]  
+> This section assumes you are using the Docker image of AFFiNE and have an instance running.
+
+Use [this Docker image](https://hub.docker.com/r/yummyume/affine-bun-workers) to run the workers.
+Example in a classic compose file:
+
+```yaml
+services:
+  workers:
+    image: yummyume/affine-bun-workers
+    restart: unless-stopped
+    container_name: affine_workers
+    environment:
+      ELYSIA_ALLOWED_ORIGINS: '${WORKERS_ELYSIA_ALLOWED_ORIGINS}'
+
+  # Other services, AFFiNE, Postgres, etc.
+```
+
+The workers will now be available on the port `3000` of the container.
+The next step is to proxy requests from `/api/worker/*` to the workers container.
+
+You can do this however you want, but here is an example using Caddy as a reverse proxy:
+
+```caddy
+https://my-website.com {
+  reverse_proxy /api/worker/* workers:3000
+  reverse_proxy * affine:3010
+}
+```
+
+### Configuration
+
+The following environment variables can be used to configure the workers:
+
+| Variable                 | Description                                                                                                         | Default       | Example                    |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------- | ------------- | -------------------------- |
+| `NODE_ENV`               | The environment the workers are running in. You generally don't need to change this.                                | `production`  | `development`              |
+| `ELYSIA_PORT`            | The port the workers will run on.                                                                                   | `3000`        | `4000`                     |
+| `ELYSIA_ALLOWED_ORIGINS` | The allowed origins for the workers (CORS). You can add multiple origins separated by a comma.                      | `localhost`   | `localhost,my-website.com` |
+| `ELYSIA_PREFIX`          | The prefix for the workers. The server will prefix every route with this prefix.                                    | `/api/worker` | `/`                        |
+| `ELYSIA_LOGGER_LEVEL`    | The log levels to use for the workers. See the [pino documentation](https://getpino.io/#/docs/api?id=level-string). | `debug`       | `info`                     |
+
+### Stripping or rewriting the prefix
+
+It's possible to tell your proxy to strip or rewrite the prefix before sending the request to the workers.
+In this case, you should set the `ELYSIA_PREFIX` to whatever the prefix will be after the rewrite. Example with Caddy and a full strip:
+
+```caddy
+https://my-website.com {
+  # handle_path will strip the prefix (in this case /api/worker) before sending the request to the workers
+  handle_path /api/worker/* {
+    reverse_proxy workers:3000
+  }
+
+  reverse_proxy * affine:3010
+}
+```
+
+In this case, the `ELYSIA_PREFIX` should be set empty.
 
 ## Development
 

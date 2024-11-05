@@ -6,13 +6,15 @@ import { helmet } from 'elysia-helmet';
 import { proxyImage } from './utils/image-proxy';
 import { getLinkPreviewMetadata } from './utils/link-preview';
 
-export const ALLOWED_ORIGINS = Bun.env.ALLOWED_ORIGINS?.split(',') ?? [];
+export const ELYSIA_ALLOWED_ORIGINS = Bun.env.ELYSIA_ALLOWED_ORIGINS?.split(',') ?? [];
 export const ELYSIA_PORT = Number.parseInt(Bun.env.ELYSIA_PORT ?? '3000');
+export const ELYSIA_PREFIX = Bun.env.ELYSIA_PREFIX;
+export const ELYSIA_LOGGER_LEVEL = Bun.env.ELYSIA_LOGGER_LEVEL ?? 'debug';
 
-export const app = new Elysia({ prefix: Bun.env.ELYSIA_PREFIX })
+export const app = new Elysia({ prefix: ELYSIA_PREFIX })
   .use(
     logger({
-      level: Bun.env.ELYSIA_LOGGER_LEVEL || 'debug',
+      level: ELYSIA_LOGGER_LEVEL,
     }),
   )
   .use(
@@ -24,7 +26,7 @@ export const app = new Elysia({ prefix: Bun.env.ELYSIA_PREFIX })
           return false;
         }
 
-        return ALLOWED_ORIGINS.includes(origin);
+        return ELYSIA_ALLOWED_ORIGINS.includes(origin);
       },
     }),
   )
