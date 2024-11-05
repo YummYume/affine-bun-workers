@@ -21,7 +21,7 @@ services:
     environment:
       NODE_ENV: '${WORKERS_NODE_ENV}'
       ELYSIA_PORT: '${WORKERS_ELYSIA_PORT}'
-      ALLOWED_ORIGINS: '${WORKERS_ALLOWED_ORIGINS}'
+      ELYSIA_ALLOWED_ORIGINS: '${WORKERS_ELYSIA_ALLOWED_ORIGINS}'
       ELYSIA_PREFIX: '${WORKERS_ELYSIA_PREFIX}'
       ELYSIA_LOGGER_LEVEL: '${WORKERS_ELYSIA_LOGGER_LEVEL}'
 
@@ -33,7 +33,7 @@ services:
   #   restart: unless-stopped
   #   container_name: affine_workers
   #   environment:
-  #     ALLOWED_ORIGINS: '${WORKERS_ALLOWED_ORIGINS}'
+  #     ELYSIA_ALLOWED_ORIGINS: '${WORKERS_ELYSIA_ALLOWED_ORIGINS}'
   #     ELYSIA_PREFIX: '${WORKERS_ELYSIA_PREFIX}'
 
   affine:
@@ -60,7 +60,7 @@ services:
       NODE_OPTIONS: '${NODE_OPTIONS:---import=./scripts/register.js}'
       AFFINE_CONFIG_PATH: '${AFFINE_CONFIG_PATH:-/root/.affine/config}'
       REDIS_SERVER_HOST: '${REDIS_SERVER_HOST:-redis}'
-      DATABASE_URL: '${DATABASE_URL}'
+      DATABASE_URL: '${AFFINE_DATABASE_URL}'
       NODE_ENV: '${NODE_ENV:-production}'
       AFFINE_SERVER_HOST: '${AFFINE_SERVER_HOST}'
       AFFINE_SERVER_PORT: '${AFFINE_SERVER_PORT}'
