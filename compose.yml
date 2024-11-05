@@ -22,6 +22,8 @@ services:
       NODE_ENV: '${WORKERS_NODE_ENV}'
       ELYSIA_PORT: '${WORKERS_ELYSIA_PORT}'
       ALLOWED_ORIGINS: '${WORKERS_ALLOWED_ORIGINS}'
+      ELYSIA_PREFIX: '${WORKERS_ELYSIA_PREFIX}'
+      ELYSIA_LOGGER_LEVEL: '${WORKERS_ELYSIA_LOGGER_LEVEL}'
 
   # Uncomment the following to test the production image of the workers
   # workers:
@@ -32,6 +34,7 @@ services:
   #   container_name: affine_workers
   #   environment:
   #     ALLOWED_ORIGINS: '${WORKERS_ALLOWED_ORIGINS}'
+  #     ELYSIA_PREFIX: '${WORKERS_ELYSIA_PREFIX}'
 
   affine:
     image: 'ghcr.io/toeverything/affine-graphql:stable'
