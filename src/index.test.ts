@@ -5,7 +5,7 @@ import { app } from '.';
 describe('/link-preview', () => {
   it('fails with a wrong URL', async () => {
     const response = await app.handle(
-      new Request('http://localhost/api/worker/link-preview', {
+      new Request('http://localhost/link-preview', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -25,7 +25,7 @@ describe('/link-preview', () => {
 
   it('fetches metadata for a valid URL', async () => {
     const response = await app.handle(
-      new Request('http://localhost/api/worker/link-preview', {
+      new Request('http://localhost/link-preview', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ describe('/link-preview', () => {
 describe('/image-proxy', () => {
   it('fails with a wrong URL', async () => {
     const response = await app.handle(
-      new Request('http://localhost/api/worker/image-proxy', {
+      new Request('http://localhost/image-proxy', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ describe('/image-proxy', () => {
 
   it('proxies an image in webp', async () => {
     const response = await app.handle(
-      new Request('http://localhost/api/worker/image-proxy', {
+      new Request('http://localhost/image-proxy', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ describe('/image-proxy', () => {
 
   it('proxies an image in avif', async () => {
     const response = await app.handle(
-      new Request('http://localhost/api/worker/image-proxy', {
+      new Request('http://localhost/image-proxy', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
