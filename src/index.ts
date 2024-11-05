@@ -9,10 +9,10 @@ import { getLinkPreviewMetadata } from './utils/link-preview';
 export const ALLOWED_ORIGINS = Bun.env.ALLOWED_ORIGINS?.split(',') ?? [];
 export const ELYSIA_PORT = Number.parseInt(Bun.env.ELYSIA_PORT ?? '3000');
 
-export const app = new Elysia({ prefix: '/api/worker' })
+export const app = new Elysia({ prefix: Bun.env.ELYSIA_PREFIX })
   .use(
     logger({
-      level: 'debug',
+      level: Bun.env.ELYSIA_LOGGER_LEVEL || 'debug',
     }),
   )
   .use(
