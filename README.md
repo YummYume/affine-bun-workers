@@ -100,7 +100,7 @@ In this case, the `ELYSIA_PREFIX` should be set empty.
 
 ## Development
 
-- (Optional) Change the .env values if needed
+- (Optional) Change the `.env` values if needed with a `.env.local` and `compose.override.yml` file
 - Run `docker compose up -d` (or `make up`) to start the AFFiNE app and the workers
 - Go to [http://localhost](http://localhost) to access the AFFiNE app
 - Create a new dummy account, create a new doc and try pasting a link or an image to see results
