@@ -2,6 +2,7 @@
 
 [![Linting](https://github.com/YummYume/affine-bun-workers/actions/workflows/linting.yml/badge.svg)](https://github.com/YummYume/affine-bun-workers/actions/workflows/linting.yml)
 [![Testing](https://github.com/YummYume/affine-bun-workers/actions/workflows/testing.yml/badge.svg)](https://github.com/YummYume/affine-bun-workers/actions/workflows/testing.yml)
+[![Publish image on Docker Hub](https://github.com/YummYume/affine-bun-workers/actions/workflows/publish.yml/badge.svg)](https://github.com/YummYume/affine-bun-workers/actions/workflows/publish.yml)
 
 [AFFiNE](https://affine.pro) workers but for self-hosted Docker instances, using [Bun](https://bun.sh) and [Elysia](https://elysiajs.com).
 
@@ -74,7 +75,7 @@ The following environment variables can be used on the service to configure the 
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ----------------------- |
 | `NODE_ENV`               | The environment the workers are running in. You generally don't need to change this.                                                                                        | `production`  | `development`           |
 | `ELYSIA_PORT`            | The port the workers will run on.                                                                                                                                           | `3000`        | `4000`                  |
-| `ELYSIA_ALLOWED_ORIGINS` | The allowed origins for the workers (CORS). You can probably leave this empty if you use the same domain for everything. You can add multiple origins separated by a comma. | ``            | `affine.my-website.com` |
+| `ELYSIA_ALLOWED_ORIGINS` | The allowed origins for the workers (CORS). You can probably leave this empty if you use the same domain for everything. You can add multiple origins separated by a comma. |               | `affine.my-website.com` |
 | `ELYSIA_PREFIX`          | The prefix for the workers. The server will prefix every route with this prefix.                                                                                            | `/api/worker` | `/`                     |
 | `ELYSIA_LOGGER_LEVEL`    | The log levels to use for the workers. See the [pino documentation](https://getpino.io/#/docs/api?id=level-string).                                                         | `debug`       | `info`                  |
 
