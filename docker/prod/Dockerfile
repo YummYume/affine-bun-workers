@@ -21,7 +21,7 @@ COPY --from=builder --chown=bun:bun /home/bun/affine-workers/node_modules ./node
 ENV NODE_ENV=production
 ENV ELYSIA_PORT=3000
 ENV ELYSIA_ALLOWED_ORIGINS=
-ENV ELYSIA_PREFIX=/api/workers
+ENV ELYSIA_PREFIX=/api/worker
 ENV ELYSIA_LOGGER_LEVEL=debug
 
 USER bun
